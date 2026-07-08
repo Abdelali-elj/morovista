@@ -1,0 +1,139 @@
+.map-container {
+    padding: 0;
+    /* Fully removed padding */
+    background: transparent;
+    width: 100%;
+    max-width: 500px;
+    /* Increased back slightly */
+    height: 380px;
+    /* Reduced height to keep glass box short */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* Relative inside flex container */
+    margin-top: 0.5rem;
+    /* Reduced top margin */
+    margin-bottom: 0;
+    /* No bottom margin */
+    margin-right: -1rem;
+    /* Adjusted for shrunk container */
+    margin-left: -1rem;
+    /* Shifted more to the left */
+    z-index: 1;
+}
+
+@media (max-width: 1024px) {
+    .map-container {
+        max-width: 350px;
+        height: 350px;
+        margin-right: 0;
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .map-container {
+        max-width: 280px;
+        height: 280px;
+    }
+}
+
+.marker {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.marker:hover circle {
+    fill: #fff;
+    stroke: #2E611E;
+    stroke-width: 2;
+}
+
+.marker circle {
+    transition: all 0.3s ease;
+    animation: marker-pulse 2s infinite ease-in-out;
+}
+
+@keyframes marker-pulse {
+    0% {
+        r: 5;
+        opacity: 1;
+        filter: brightness(1);
+    }
+
+    50% {
+        r: 8;
+        opacity: 0.7;
+        filter: brightness(1.5);
+    }
+
+    100% {
+        r: 5;
+        opacity: 1;
+        filter: brightness(1);
+    }
+}
+
+.rsm-geography {
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
+    transition: all 0.3s ease;
+}
+
+.rsm-geography:hover {
+    filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.2));
+}
+
+.custom-tooltip {
+    background: rgba(0, 0, 0, 0.8) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+@media (max-width: 1200px) {
+    .map-container {
+        width: 400px;
+        height: 500px;
+        right: 2%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .map-container {
+        display: none;
+    }
+}
+
+/* Geographical Snake Animation */
+.geographical-snake {
+    stroke: #ff4757;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* Increased speed to 25s duration */
+    /* Recalibrated dasharray for 1s gap at this speed */
+    /* Snake = 150, Path = 1000, Total Pattern = 1200 (approx 1s gap) */
+    stroke-dasharray: 150, 1050;
+    animation: snake-geographical-rotate 15s linear infinite;
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.6));
+    z-index: 10;
+}
+
+@keyframes snake-geographical-rotate {
+    0% {
+        /* Start with snake hidden behind the beginning */
+        stroke-dashoffset: 1200;
+    }
+
+    100% {
+        /* Ends at the start of the next cycle */
+        stroke-dashoffset: 0;
+    }
+}

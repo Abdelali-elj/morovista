@@ -1,0 +1,474 @@
+/* =========================================
+   About Us Section — Pixel-perfect Modern Premium Style
+   ========================================= */
+
+/* ── Section wrapper ── */
+.au-section {
+    background: #ffffff;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    padding: 80px 48px;
+}
+
+/* ── Inner card container — same style as pt-container (Plans & Tours) ── */
+.au-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #f2f4f7 0%, #e8ecf1 100%);
+    border-radius: 36px;
+    padding: 72px 72px 64px 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+    border: 2px solid rgba(192, 36, 26, 0.08);
+}
+
+/* ══════════════════════════════════════
+   TOP STATS BAR  — rounded card
+   ══════════════════════════════════════ */
+.au-stats-bar {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.au-stats-inner {
+    background: transparent;
+    border-radius: 28px;
+    padding: 40px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: none;
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.au-stats-progress-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 4px;
+    background: linear-gradient(90deg, #C0241A, #d83025);
+    width: 30px; /* Small centered dash initially, dynamically scales on scroll */
+    border-radius: 2px;
+}
+
+/* Each stat block */
+.au-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+/* Icon */
+.au-stat-icon {
+    font-size: 2rem;
+    color: #C0241A;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(192, 36, 26, 0.12);
+}
+
+/* Animated number — DARK */
+.au-stat-number {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: #111827;
+    line-height: 1;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Label below number */
+.au-stat-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #64748b;
+    text-align: center;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+/* Vertical divider */
+.au-stat-divider {
+    width: 1px;
+    height: 56px;
+    background: rgba(15, 23, 42, 0.1);
+    flex-shrink: 0;
+    margin: 0 12px;
+}
+
+/* ══════════════════════════════════════
+   BOTTOM BODY  — left text + right bento
+   ══════════════════════════════════════ */
+.au-body {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 64px;
+    padding: 0;
+    margin: 0;
+}
+
+/* ── LEFT PANEL ── */
+.au-left {
+    flex: 0 0 400px;
+    display: flex;
+    flex-direction: column;
+    padding-top: 12px;
+}
+
+/* Eyebrow */
+.au-eyebrow {
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #C0241A;
+    margin-bottom: 16px;
+    display: block;
+    font-family: 'Outfit', sans-serif;
+    background: rgba(192, 36, 26, 0.08);
+    padding: 8px 16px;
+    border-radius: 20px;
+    width: fit-content;
+}
+
+/* Title */
+.au-title {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+/* Orange underline accent (as in screenshot) */
+.au-title::after {
+    content: '';
+    display: block;
+    width: 56px;
+    height: 4px;
+    background: linear-gradient(90deg, #d97706, #f59e0b);
+    border-radius: 2px;
+    margin-top: 20px;
+    margin-bottom: 4px;
+}
+
+/* Description (No Clamp - Full Text aligned to Bento height!) */
+.au-desc {
+    font-size: 1rem;
+    color: #4b5563;
+    line-height: 1.75;
+    margin: 24px 0 32px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Filled button */
+.au-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #C0241A 0%, #a01d15 100%) !important;
+    color: #ffffff !important;
+    border: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 16px 32px;
+    border-radius: 32px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: fit-content;
+    box-shadow: 0 8px 20px rgba(192, 36, 26, 0.25) !important;
+    opacity: 1 !important;
+}
+
+.au-btn:hover {
+    background: linear-gradient(135deg, #d83025 0%, #C0241A 100%) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(192, 36, 26, 0.35) !important;
+}
+
+/* ── RIGHT BENTO GRID ── */
+.au-bento {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    height: 500px;
+    /* Expanded Height for premium grand layout */
+}
+
+/* ── Tall left portrait ── */
+.au-bento-tall {
+    flex: 0 0 32%;
+    height: 100%;
+    /* fill full bento height */
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 2px solid rgba(192, 36, 26, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.au-bento-tall img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s ease;
+}
+
+.au-bento-tall:hover img {
+    transform: scale(1.05);
+}
+
+/* ── Right flex column ── */
+.au-bento-right {
+    flex: 1;
+    height: 100%;
+    /* fill full bento height */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ── Wide top image (55% of column height) ── */
+.au-bento-wide {
+    flex: 0 0 calc(55% - 6px);
+    /* 55% of height minus half-gap */
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    width: 100%;
+    border: 2px solid rgba(192, 36, 26, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.au-bento-wide img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s ease;
+}
+
+.au-bento-wide:hover img {
+    transform: scale(1.05);
+}
+
+/* ── Bottom row: 2 small squares (45% of column height) ── */
+.au-bento-row {
+    flex: 1;
+    /* fills remaining height */
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    min-height: 0;
+}
+
+.au-bento-sm {
+    flex: 1;
+    height: 100%;
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 2px solid rgba(192, 36, 26, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.au-bento-sm img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s ease;
+}
+
+.au-bento-sm:hover img {
+    transform: scale(1.05);
+}
+
+/* ── Image labels ── */
+.au-bento-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 44px 16px 16px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.65) 0%, transparent 100%);
+    display: flex;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Beach Getaways label at TOP-LEFT */
+.au-bento-label--top {
+    bottom: auto;
+    top: 0;
+    padding: 16px 16px 44px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 0%, transparent 100%);
+    align-items: flex-start;
+}
+
+.au-bento-label span {
+    font-family: 'Outfit', 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.3;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+@media (max-width: 1024px) {
+    .au-section {
+        padding: 48px 24px;
+    }
+
+    .au-container {
+        padding: 40px 40px 36px;
+        gap: 40px;
+    }
+
+    .au-stats-inner {
+        padding: 28px 32px;
+    }
+
+    .au-body {
+        gap: 40px;
+    }
+
+    .au-left {
+        flex: 0 0 320px;
+    }
+
+    .au-bento {
+        height: 420px;
+    }
+}
+
+@media (max-width: 900px) {
+    .au-stats-inner {
+        padding: 22px 24px;
+        gap: 0;
+    }
+
+    .au-stat-number {
+        font-size: 1.8rem;
+    }
+
+    .au-stat-label {
+        font-size: 0.74rem;
+    }
+
+    .au-body {
+        flex-direction: column;
+        padding: 0;
+        gap: 36px;
+    }
+
+    .au-left {
+        flex: unset;
+        width: 100%;
+    }
+
+    .au-bento {
+        height: 380px;
+    }
+}
+
+@media (max-width: 640px) {
+    .au-section {
+        padding: 36px 12px;
+    }
+
+    .au-container {
+        padding: 28px 20px;
+        border-radius: 24px;
+        gap: 28px;
+    }
+
+    .au-stats-bar {
+        margin-bottom: 0;
+    }
+
+    .au-stats-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 22px 20px;
+    }
+
+    .au-stat-divider {
+        display: none;
+    }
+
+    .au-stat-item {
+        align-items: flex-start;
+    }
+
+    .au-body {
+        padding: 0;
+    }
+
+    /* Stack bento vertically on mobile */
+    .au-bento {
+        flex-direction: column;
+        height: auto;
+        gap: 10px;
+    }
+
+    .au-bento-tall {
+        flex: unset;
+        height: 240px;
+        width: 100%;
+    }
+
+    .au-bento-right {
+        flex: unset;
+        height: auto;
+        gap: 10px;
+    }
+
+    .au-bento-wide {
+        flex: unset;
+        height: 180px;
+    }
+
+    .au-bento-row {
+        flex: unset;
+        height: 150px;
+        min-height: unset;
+        gap: 10px;
+    }
+
+    .au-title {
+        font-size: 2rem;
+    }
+}

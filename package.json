@@ -1,0 +1,12 @@
+{
+  "name": "pfe-root",
+  "version": "1.0.0",
+  "description": "Root runner for Laravel and React Vite",
+  "main": "dev.js",
+  "scripts": {
+    "dev": "node dev.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

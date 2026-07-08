@@ -1,0 +1,110 @@
+erDiagram
+    %% --- UTILISATEURS & INTERACTIONS ---
+    UTILISATEUR ||--o{ PLAN_TOUR : "propose"
+    UTILISATEUR ||--o{ COMMENTAIRE : "rédige"
+    UTILISATEUR ||--o{ SERVICE_LOCAL : "soumet"
+    UTILISATEUR }o--o{ HOTEL : "favoris"
+    UTILISATEUR }o--o{ RESTAURANT : "favoris"
+    UTILISATEUR }o--o{ STADE : "favoris"
+
+    %% --- LOCALISATION (VILLE) ---
+    VILLE ||--o{ HOTEL : "héberge"
+    VILLE ||--o{ RESTAURANT : "héberge"
+    VILLE ||--o{ LIEU_PLACE : "contient"
+    VILLE ||--o{ STADE : "héberge"
+    VILLE ||--o{ PLAN_TOUR : "destination"
+    VILLE ||--o{ SERVICE_LOCAL : "couvre"
+
+    %% --- DÉFINITION DES ENTITÉS ---
+    UTILISATEUR {
+        string id PK
+        string nom
+        string email
+        string telephone
+        string role
+        string status
+    }
+
+    VILLE {
+        string id PK
+        string nom
+        string image_url
+    }
+
+    HOTEL {
+        string id PK
+        string nom
+        string photo_url
+        string adresse
+        string contact
+        string categorie
+        int likes
+    }
+
+    RESTAURANT {
+        string id PK
+        string nom
+        string photo_url
+        string adresse
+        string contact
+        string categorie
+        int likes
+    }
+
+    STADE {
+        string id PK
+        string nom
+        string image_url
+        string adresse
+        int capacite
+    }
+
+    LIEU_PLACE {
+        string id PK
+        string nom
+        string image_url
+        string adresse
+        text description
+    }
+
+    PLAN_TOUR {
+        string id PK
+        string titre
+        string image_url
+        float prix
+        string duree
+        string status
+        string addedBy
+    }
+
+    SERVICE_LOCAL {
+        string id PK
+        string nom_service
+        string type
+        string telephone
+        string adresse
+        string status
+    }
+
+    TRANSPORT {
+        string id PK
+        string type_vehicule
+        string photo_url
+        text description
+        string lien
+    }
+
+    URGENCE_PHONEN {
+        string id PK
+        string service_nom
+        string numero
+    }
+
+    COMMENTAIRE {
+        string id PK
+        string auteur_nom
+        text contenu
+        int note
+        date date_pub
+        int likes
+    }

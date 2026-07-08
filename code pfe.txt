@@ -1,0 +1,417 @@
+PROJET MOROVISTA - EXTRAITS DE CODE (FRONTEND & BACKEND APPARIES)
+============================================================
+
+-- 1. Section Authentification (Front-end) --
+// Source: Login.jsx - Soumission du formulaire de connexion et inscription
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+        if (isLogin) {
+            const response = await api.post('/login', {
+                email: formData.email, password: formData.password
+            });
+            const { user: userData, access_token } = response.data;
+            setUser(userData);
+            localStorage.setItem('token', access_token);
+            localStorage.setItem('user', JSON.stringify(userData));
+            navigate(userData.role === 'admin' ? '/AdminDashboard' : '/');
+        } else {
+            const response = await api.post('/register', {
+                name: formData.name, email: formData.email,
+                password: formData.password, role: formData.userType
+            });
+            const { user: userData, access_token } = response.data;
+            setUser(userData);
+            localStorage.setItem('token', access_token);
+            localStorage.setItem('user', JSON.stringify(userData));
+            navigate('/');
+        }
+    } catch (err) {
+        setError(err.response?.data?.message || 'Erreur lors de la connexion');
+    }
+};
+
+-- 1. Section Authentification (Back-end) --
+// Source: AuthController.php - Méthode d'enregistrement de compte avec hashage bcrypt
+public function register(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|min:6',
+    ]);
+
+    $role = $request->role ?? 'visitor';
+    $status = in_array($role, ['provider', 'guide']) ? 'pending' : 'accepted';
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => $role,
+        'status' => $status,
+    ]);
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+    return response()->json([
+        'user' => $user,
+        'access_token' => $token,
+        'token_type' => 'Bearer'
+    ]);
+}
+
+-- 2. Section Chatbot IA (Front-end) --
+// Source: Chatbot.jsx - Requête vers l'API Groq (Llama 3.3) avec historique
+const sendMessage = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    const userMsg = { role: 'user', text: input, timestamp: new Date().toISOString() };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+    setIsTyping(true);
+    try {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [
+                    { role: "system", content: dynamicPrompt },
+                    ...messages.slice(-10).map(m => ({ role: m.role === 'model' ? 'assistant' : 'user', content: m.text })),
+                    { role: "user", content: input }
+                ],
+                temperature: 0.7, max_tokens: 1024
+            })
+        });
+        const data = await response.json();
+        setMessages(prev => [...prev, { role: 'model', text: data.choices[0].message.content, timestamp: new Date().toISOString() }]);
+    } catch (error) {
+        console.error("Chatbot Error:", error);
+    } finally {
+        setIsTyping(false);
+    }
+};
+
+-- 2. Section Chatbot IA (Back-end) --
+// Source: ApiController.php - Récupération dynamique du contexte BDD pour alimenter le prompt
+public function getChatContext() {
+    $villes = Ville::all()->pluck('nom')->toArray();
+    $hotels = Hotel::with('ville')->get()->map(function($h) {
+        return $h->nom . " (" . ($h->ville->nom ?? 'Maroc') . ")";
+    })->toArray();
+    $restaurants = Restaurant::with('ville')->get()->map(function($r) {
+        return $r->nom . " (" . ($r->ville->nom ?? 'Maroc') . ")";
+    })->toArray();
+    $tours = PlanTour::where('status', 'active')->orWhere('status', 'accepted')->get()->pluck('titre')->toArray();
+
+    return response()->json([
+        'villes' => $villes,
+        'hotels' => array_slice($hotels, 0, 20),
+        'restaurants' => array_slice($restaurants, 0, 20),
+        'tours' => $tours
+    ]);
+}
+
+-- 3. Section Réservations (Front-end) --
+// Source: ReservationModal.jsx - Payload de soumission de réservation d'hôtel/restaurant
+const handleBookingSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+        const payload = {
+            hotel_id: item.id,
+            service_type: type,
+            client_nom: bookingData.name,
+            client_email: bookingData.email,
+            client_tel: bookingData.phone,
+            date_arrivee: bookingData.dateArrivee,
+            date_depart: type === 'hotel' ? bookingData.dateDepart : bookingData.timeBooking,
+            nb_personnes: bookingData.guests,
+            message: bookingData.notes
+        };
+        const response = await api.post('/reservation', payload);
+        if (response.data.success) {
+            alert(t('booking.success_message') || "Réservation effectuée !");
+            onClose();
+        }
+    } catch (err) {
+        console.error("Booking submission error", err);
+    } finally {
+        setSubmitting(false);
+    }
+};
+
+-- 3. Section Réservations (Back-end) --
+// Source: ApiController.php - Validation des données de réservation et envoi du mail SMTP
+public function sendReservation(Request $request)
+{
+    $rules = [
+        'hotel_id'      => 'required|integer',
+        'service_type'  => 'required|in:hotel,restaurant',
+        'client_nom'    => 'required|string|max:100',
+        'client_email'  => 'required|email',
+        'client_tel'    => 'required|string|max:20',
+        'date_arrivee'  => 'required|date',
+        'nb_personnes'  => 'required|integer|min:1|max:20',
+    ];
+    if ($request->input('service_type') === 'hotel') {
+        $rules['date_depart'] = 'required|date|after:date_arrivee';
+    } else {
+        $rules['date_depart'] = 'required|string';
+    }
+    $validated = $request->validate($rules);
+    $service = ($validated['service_type'] === 'hotel')
+        ? Hotel::with('ville')->find($validated['hotel_id'])
+        : Restaurant::with('ville')->find($validated['hotel_id']);
+    
+    Mail::to(env('MAIL_FROM_ADDRESS'))->send(new ReservationMail($validated));
+    return response()->json(['success' => true, 'message' => 'Réservation envoyée !']);
+}
+
+-- 4. Section Hôtels (Front-end) --
+// Source: Hotels.jsx - Récupération des hôtels filtrés par ville
+useEffect(() => {
+    const fetchHotels = async () => {
+        setLoading(true);
+        try {
+            const url = selectedCity ? `/hotels?ville=${selectedCity}` : '/hotels';
+            const response = await api.get(url);
+            setHotels(response.data);
+        } catch (err) {
+            console.error("Error fetching hotels", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchHotels();
+}, [selectedCity]);
+
+-- 4. Section Hôtels (Back-end) --
+// Source: ApiController.php - Eager loading de la ville et comptage des commentaires d'hôtels
+public function getHotels(Request $request) {
+    $query = Hotel::with('ville')->withCount('commentaires');
+    if ($request->has('ville')) {
+        $query->whereHas('ville', function($q) use ($request) {
+            $q->where('nom', $request->ville);
+        });
+    }
+    $data = $query->get()->map(function($item) {
+        $item->ville_name = $item->ville->nom ?? null;
+        return $item;
+    });
+    return response()->json($data);
+}
+
+-- 5. Section Restaurants (Front-end) --
+// Source: Restaurant.jsx - Requête de chargement des restaurants
+useEffect(() => {
+    const fetchRestaurants = async () => {
+        setLoading(true);
+        try {
+            const url = selectedCity ? `/restaurants?ville=${selectedCity}` : '/restaurants';
+            const response = await api.get(url);
+            setRestaurants(response.data);
+        } catch (err) {
+            console.error("Error fetching restaurants", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchRestaurants();
+}, [selectedCity]);
+
+-- 5. Section Restaurants (Back-end) --
+// Source: ApiController.php - Liste filtrée des restaurants avec leur ville correspondante
+public function getRestaurants(Request $request) {
+    $query = Restaurant::with('ville')->withCount('commentaires');
+    if ($request->has('ville')) {
+        $query->whereHas('ville', function($q) use ($request) {
+            $q->where('nom', $request->ville);
+        });
+    }
+    $data = $query->get()->map(function($item) {
+        $item->ville_name = $item->ville->nom ?? null;
+        return $item;
+    });
+    return response()->json($data);
+}
+
+-- 6. Section Stades (Front-end) --
+// Source: Stadium.jsx - Chargement des stades de football selon la ville choisie
+useEffect(() => {
+    const loadStadiums = async () => {
+        setLoading(true);
+        try {
+            const url = selectedCity ? `/stades?ville=${selectedCity}` : '/stades';
+            const res = await api.get(url);
+            setStadiums(res.data);
+        } catch (err) {
+            console.error("Error loading stadiums", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+    loadStadiums();
+}, [selectedCity]);
+
+-- 6. Section Stades (Back-end) --
+// Source: ApiController.php - Endpoints retournant les informations relatives aux stades
+public function getStades(Request $request) {
+    $query = Stade::with('ville');
+    if ($request->has('ville')) {
+        $query->whereHas('ville', function($q) use ($request) {
+            $q->where('nom', $request->ville);
+        });
+    }
+    $data = $query->get()->map(function($item) {
+        $item->ville_name = $item->ville->nom ?? null;
+        return $item;
+    });
+    return response()->json($data);
+}
+
+-- 7. Section Lieux Touristiques (Front-end) --
+// Source: places.jsx - Chargement des lieux d'intérêt historique et culturel
+useEffect(() => {
+    const fetchPlaces = async () => {
+        setLoading(true);
+        try {
+            const url = selectedCity ? `/lieu-places?ville=${selectedCity}` : '/lieu-places';
+            const res = await api.get(url);
+            setPlaces(res.data);
+        } catch (err) {
+            console.error("Error loading places", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchPlaces();
+}, [selectedCity]);
+
+-- 7. Section Lieux Touristiques (Back-end) --
+// Source: ApiController.php - Requête d'extraction des lieux avec filtre ville_id
+public function getLieuPlaces(Request $request) {
+    $query = LieuPlace::with('ville');
+    if ($request->has('ville')) {
+        $query->whereHas('ville', function($q) use ($request) {
+            $q->where('nom', $request->ville);
+        });
+    }
+    $data = $query->get()->map(function($item) {
+        $item->ville_name = $item->ville->nom ?? null;
+        return $item;
+    });
+    return response()->json($data);
+}
+
+-- 8. Section Plans de Voyage (Front-end) --
+// Source: PlansG.jsx - Espace de découverte des itinéraires personnalisés (tours)
+useEffect(() => {
+    const fetchPlans = async () => {
+        setLoading(true);
+        try {
+            const url = selectedCity ? `/plan-tours?ville=${selectedCity}` : '/plan-tours';
+            const res = await api.get(url);
+            setPlans(res.data);
+        } catch (err) {
+            console.error("Error loading travel plans", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchPlans();
+}, [selectedCity]);
+
+-- 8. Section Plans de Voyage (Back-end) --
+// Source: ApiController.php - Lecture des circuits et plans de voyage approuvés
+public function getPlanTours(Request $request) {
+    $query = PlanTour::with('ville');
+    if ($request->has('ville')) {
+        $query->whereHas('ville', function($q) use ($request) {
+            $q->where('nom', $request->ville);
+        });
+    }
+    $data = $query->get()->map(function($item) {
+        $item->ville_name = $item->ville->nom ?? null;
+        return $item;
+    });
+    return response()->json($data);
+}
+
+-- 9. Section Services Locaux (Front-end) --
+// Source: LocalServices.jsx - Affichage des artisans, guides et commerces de proximité
+useEffect(() => {
+    const fetchServices = async () => {
+        setLoading(true);
+        try {
+            const url = selectedCity ? `/service-locals?ville=${selectedCity}` : '/service-locals';
+            const res = await api.get(url);
+            setServices(res.data);
+        } catch (err) {
+            console.error("Error loading local services", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchServices();
+}, [selectedCity]);
+
+-- 9. Section Services Locaux (Back-end) --
+// Source: ApiController.php - Récupération des commerces locaux rattachés aux villes
+public function getServiceLocals(Request $request) {
+    $query = ServiceLocal::with('ville');
+    if ($request->has('ville')) {
+        $query->whereHas('ville', function($q) use ($request) {
+            $q->where('nom', $request->ville);
+        });
+    }
+    $data = $query->get()->map(function($item) {
+        $item->ville_name = $item->ville->nom ?? null;
+        return $item;
+    });
+    return response()->json($data);
+}
+
+-- 10. Section Commentaires et Avis (Front-end) --
+// Source: SiteComments.jsx - Formulaire d'envoi d'évaluation avec système d'étoiles
+const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const payload = {
+            auteur_nom: newComment.author,
+            pays: newComment.country,
+            contenu: newComment.content,
+            note: newComment.rating,
+            service_type: serviceType,
+            service_id: serviceId
+        };
+        const response = await api.post('/commentaires', payload);
+        setComments(prev => [response.data, ...prev]);
+        setNewComment({ author: '', country: '', content: '', rating: 5 });
+    } catch (err) {
+        console.error("Error publishing comment", err);
+    }
+};
+
+-- 10. Section Commentaires et Avis (Back-end) --
+// Source: ApiController.php - Validation et persistance des commentaires en base de données
+public function storeCommentaire(Request $request) {
+    $request->validate([
+        'auteur_nom' => 'required|string',
+        'pays' => 'required|string',
+        'contenu' => 'required|string',
+        'service_type' => 'required|string',
+        'service_id' => 'required|integer'
+    ]);
+    $commentaire = Commentaire::create([
+        'auteur_nom' => $request->auteur_nom,
+        'pays' => $request->pays,
+        'contenu' => $request->contenu,
+        'note' => $request->note ?? 5,
+        'service_type' => $request->service_type,
+        'service_id' => $request->service_id,
+        'date_pub' => now(),
+    ]);
+    return response()->json($commentaire, 201);
+}

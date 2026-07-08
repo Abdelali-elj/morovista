@@ -1,0 +1,35 @@
+flowchart TD
+    classDef actor fill:#ffffff,stroke:#1e293b,stroke-width:3px,font-weight:bold,font-size:22px,color:#000;
+    classDef auth fill:#eff6ff,stroke:#2563eb,stroke-width:5px,rx:50px,ry:50px,font-weight:bold,font-size:28px,color:#1d4ed8;
+    classDef uc fill:#f8fafc,stroke:#64748b,stroke-width:2px,rx:20px,ry:20px,font-size:18px,color:#333;
+
+    %% Actors
+    User(("👤 Visiteur / Voyageur")):::actor
+    Guide(("🗺️ Guide Officiel")):::actor
+    Provider(("🏢 Prestataire")):::actor
+    Admin(("🛡️ Administrateur")):::actor
+
+    %% Main Bubble
+    Auth((("S'authentifier"))):::auth
+
+    %% Structure and arrows pulling to the center bubble
+    User ===>|S'authentifier| Auth
+    
+    Auth <===|S'authentifier| Guide
+    Auth <===|S'authentifier| Provider
+    
+    %% Push Admin down below Guide and Provider
+    Guide ~~~ Admin
+    Provider ~~~ Admin
+    Auth <===|S'authentifier| Admin
+
+    %% Specific Use Cases for context
+    UC1("Explorer les Services"):::uc
+    UC2("Créer des Plans (Tours)"):::uc
+    UC3("Soumettre un Service"):::uc
+    UC4("Valider & Modérer la plateforme"):::uc
+
+    User -.- UC1
+    Guide -.- UC2
+    Provider -.- UC3
+    Admin -.- UC4
