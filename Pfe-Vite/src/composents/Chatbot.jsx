@@ -116,17 +116,15 @@ const Chatbot = () => {
 
         try {
             // Prepare Dynamic System Prompt with DB Content
-            let dynamicPrompt = `IMPORTANT : Tu es l'IA de MoroVista. Tu DOIS utiliser UNIQUEMENT les données suivantes pour répondre aux questions sur ce qui est disponible sur le site. Ne devine pas et n'utilise pas tes connaissances générales pour les listes de villes ou services.
+            let dynamicPrompt = `IMPORTANT : Tu es l'IA de MoroVista. Tu DOIS utiliser UNIQUEMENT les données suivantes pour répondre aux questions sur ce qui est disponible sur le site. Ne devine pas et n'utilise pas tes connaissances générales pour les listes de villes ou services.\n\nDONNÉES RÉELLES DU SITE :`;
 
-            DONNÉES RÉELLES DU SITE :`;
             if (dbContent) {
                 dynamicPrompt += `
-                - Villes : ${dbContent.villes.join(', ')}
-                - Hôtels : ${dbContent.hotels.join(', ')}
-                - Restaurants : ${dbContent.restaurants.join(', ')}
-                - Tours : ${dbContent.tours.join(', ')}
-                
-                Règle : Si l'utilisateur demande "Combien de villes", réponds exactement avec le nombre de villes listées ci-dessus (${dbContent.villes.length} villes).`;
+                - Villes : ${dbContent.villes ? dbContent.villes.join(', ') : 'Non spécifié'}
+                - Hôtels : ${dbContent.hotels ? dbContent.hotels.join(', ') : 'Non spécifié'}
+                - Restaurants : ${dbContent.restaurants ? dbContent.restaurants.join(', ') : 'Non spécifié'}
+                - Tours : ${dbContent.tours ? dbContent.tours.join(', ') : 'Non spécifié'}
+                Règle : Si l'utilisateur demande "Combien de villes", réponds exactement avec le nombre de villes listées ci-dessus (${dbContent.villes ? dbContent.villes.length : 0} villes).`;
             }
             dynamicPrompt += `\n\nInstructions de style : ${SYSTEM_PROMPT}`;
 
@@ -136,7 +134,7 @@ const Chatbot = () => {
                 content: msg.text
             }));
 
-            // Force language detection in prompt
+            // Force language detection itours n prompt
             let finalInput = input;
             if (i18n && i18n.language === 'ar') {
                 finalInput = `[IMPORTANT: Answer in Arabic/Darija] ${input}`;

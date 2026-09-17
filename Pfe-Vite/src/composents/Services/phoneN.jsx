@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { db } from '../../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import api from '../../api';
 import {
     FaAmbulance, FaTrain, FaInfoCircle, FaExclamationTriangle, FaBalanceScale,
     FaSearch, FaArrowLeft, FaPhoneVolume
@@ -17,8 +16,12 @@ export default function PhoneList() {
     useEffect(() => {
         const fetchPhones = async () => {
             try {
-                const snapshot = await getDocs(collection(db, 'PhoneN'));
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const res = await api.get('/urgence-phonens');
+                const data = res.data.map(item => ({
+                    id: item.id,
+                    nom: item.service_nom || item.nom,
+                    num: item.numero || item.num
+                }));
                 setPhones(data);
             } catch (err) {
                 console.error("Erreur API:", err);

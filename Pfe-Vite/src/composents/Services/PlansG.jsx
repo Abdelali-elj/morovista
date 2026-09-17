@@ -35,7 +35,8 @@ const PlansG = () => {
     const [showFavorites, setShowFavorites] = useState(false);
     const [likedItems, setLikedItems] = useState([]);
 
-    const STORAGE_BASE = 'http://127.0.0.1:8000/storage/';
+    const baseBackend = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000').replace(/\/api\/?$/, '').replace(/\/+$/, '');
+    const STORAGE_BASE = `${baseBackend}/storage/`;
 
     useEffect(() => {
         const savedUser = localStorage.getItem('user');

@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 import { FaArrowLeft, FaMapMarkerAlt, FaPhoneAlt, FaUser, FaSearch, FaBriefcase } from "react-icons/fa";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { db } from '../../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import api from '../../api';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,8 +20,17 @@ export default function LocalServices() {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const snapshot = await getDocs(collection(db, 'localServices'));
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const res = await api.get('/service-locals');
+                const data = res.data.map(item => ({
+                    id: item.id,
+                    nom: item.nom_service || item.nom,
+                    type: item.type,
+                    telephone: item.telephone,
+                    adresse: item.adresse,
+                    status: item.status,
+                    image: item.image_url || item.image,
+                    ville: item.ville_name || (typeof item.ville === 'object' ? item.ville?.nom : item.ville) || ''
+                }));
                 setServices(data.filter(s => s.status !== 'rejected'));
             } catch(err) {
                 console.error('Erreur de chargement:', err);

@@ -132,7 +132,7 @@ export default function Hotels() {
                     ...item,
                     photo: item.photo_url, // Map Laravel field to React expected field
                     adress: item.adresse,   // Map Laravel field to React expected field
-                    ville: item.ville_name  // Map Laravel field to React expected field
+                    ville: item.ville_name || (typeof item.ville === 'object' ? item.ville?.nom : item.ville) || ''
                 }));
                 setHotels(data);
                 
@@ -175,7 +175,7 @@ export default function Hotels() {
     } else if (searchTerm) {
         filteredHotels = filteredHotels.filter(h => h.nom.toLowerCase().includes(searchTerm.toLowerCase()));
     } else {
-        filteredHotels = filteredHotels.filter(h => h.ville === selectedCity);
+        filteredHotels = filteredHotels.filter(h => h.ville && h.ville.trim().toLowerCase() === selectedCity.trim().toLowerCase());
     }
 
     useEffect(() => {

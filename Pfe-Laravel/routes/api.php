@@ -5,8 +5,14 @@ use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// Health check pour Render
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok', 'app' => 'MoroVista API']);
+});
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
 
 Route::get('/villes', [ApiController::class, 'getVilles']);
 Route::get('/hotels', [ApiController::class, 'getHotels']);
@@ -70,11 +76,13 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/service-locals', [ApiController::class, 'storeServiceLocal']);
     Route::put('/service-locals/{id}', [ApiController::class, 'updateServiceLocal']);
     Route::delete('/service-locals/{id}', [ApiController::class, 'deleteServiceLocal']);
+    Route::patch('/service-locals/{id}', [ApiController::class, 'restoreServiceLocal']);
 
     // Transports CRUD
     Route::post('/transports', [ApiController::class, 'storeTransport']);
     Route::put('/transports/{id}', [ApiController::class, 'updateTransport']);
     Route::delete('/transports/{id}', [ApiController::class, 'deleteTransport']);
+    Route::patch('/transports/{id}', [ApiController::class, 'restoreTransport']);
 
     // UrgencePhonens CRUD
     Route::post('/urgence-phonens', [ApiController::class, 'storeUrgencePhonen']);

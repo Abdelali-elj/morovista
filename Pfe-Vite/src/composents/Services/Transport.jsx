@@ -5,8 +5,7 @@ import {
     FaArrowLeft, FaSearch, FaTaxi, FaBus, FaTrain,
     FaTram, FaCar, FaMapMarkerAlt, FaLink, FaPhoneAlt, FaUserTie
 } from "react-icons/fa";
-import { db } from '../../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import api from '../../api';
 
 const TRANSPORT_TYPES = (t) => [
     { id: "Bus", label: t('transport.types.Bus'), icon: <FaBus /> },
@@ -30,8 +29,16 @@ export default function Transport() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const snapshot = await getDocs(collection(db, 'transport'));
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const res = await api.get('/transports');
+                const data = res.data.map(item => ({
+                    id: item.id,
+                    nom: item.type_vehicule || item.nom,
+                    type: item.type_vehicule || item.type,
+                    photo: item.photo_url || item.photo,
+                    desc: item.description || item.desc,
+                    lien: item.lien,
+                    ville: item.ville || ''
+                }));
                 setTransportData(data);
             } catch (err) {
                 console.error("Error fetching transport data:", err);

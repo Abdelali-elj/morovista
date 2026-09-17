@@ -26,8 +26,7 @@ import { FaQuoteLeft } from 'react-icons/fa';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import { db } from '../../firebase';
-import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import api from '../../api';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -105,32 +104,31 @@ export default function SiteComments() {
     const priceLabel       = isAr ? 'السعر' : isEn ? 'PRICE' : 'PRIX';
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, 'souvenirs'), (snapshot) => {
-            const dbSouvenirs = snapshot.docs.map(doc => {
-                const data = doc.data();
-                return {
-                    id: doc.id,
-                    name: data.name || '',
-                    category: data.category || '',
-                    origin: data.origin || '',
-                    price: Number(data.price) || 0,
-                    badge: data.badge || '',
-                    description: data.description || '',
-                    image: data.image || '',
-                    tag: data.tag || '',
-                };
-            });
-            if (dbSouvenirs.length > 0) {
-                setSouvenirsList(dbSouvenirs);
-            } else {
+        const fetchSouvenirs = async () => {
+            try {
+                const res = await api.get('/souvenirs');
+                const dbSouvenirs = res.data.map(item => ({
+                    id: item.id,
+                    name: item.name || '',
+                    category: item.category || '',
+                    origin: item.origin || '',
+                    price: Number(item.price) || 0,
+                    badge: item.badge || '',
+                    description: item.description || '',
+                    image: item.image || '',
+                    tag: item.tag || '',
+                }));
+                if (dbSouvenirs.length > 0) {
+                    setSouvenirsList(dbSouvenirs);
+                } else {
+                    setSouvenirsList(SOUVENIRS);
+                }
+            } catch (err) {
+                console.error("Error fetching souvenirs:", err);
                 setSouvenirsList(SOUVENIRS);
             }
-        }, (error) => {
-            console.error("Error listening to souvenirs:", error);
-            setSouvenirsList(SOUVENIRS);
-        });
-
-        return () => unsubscribe();
+        };
+        fetchSouvenirs();
     }, []);
 
     // Lock body scroll when modal open

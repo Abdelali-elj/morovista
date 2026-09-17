@@ -129,7 +129,7 @@ export default function Restaurant() {
                     ...item,
                     photo: item.photo_url,
                     adress: item.adresse,
-                    ville: item.ville_name
+                    ville: item.ville_name || (typeof item.ville === 'object' ? item.ville?.nom : item.ville) || ''
                 }));
                 setRestau(data);
             } catch(err) {
@@ -162,7 +162,7 @@ export default function Restaurant() {
     } else if (searchTerm) {
         filteredRestau = filteredRestau.filter(r => r.nom.toLowerCase().includes(searchTerm.toLowerCase()));
     } else {
-        filteredRestau = filteredRestau.filter(r => r.ville === selectedCity);
+        filteredRestau = filteredRestau.filter(r => r.ville && r.ville.trim().toLowerCase() === selectedCity.trim().toLowerCase());
     }
 
     // Auto-select city when search results are found

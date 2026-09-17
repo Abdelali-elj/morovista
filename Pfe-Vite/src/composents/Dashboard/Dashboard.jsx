@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../../firebase';
-import { collection, getDocs, doc, updateDoc, addDoc } from 'firebase/firestore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../api';
 import {
@@ -129,8 +127,13 @@ function Dashboard() {
 
     const fetchMyTours = async (email) => {
         try {
-            const snapshot = await getDocs(collection(db, 'tours'));
-            const allTours = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const res = await api.get('/plan-tours');
+            const allTours = (res.data || []).map(t => ({
+                id: t.id,
+                ...t,
+                destination: t.ville_name || (typeof t.ville === 'object' ? t.ville?.nom : t.ville) || '',
+                image: t.image_url || t.image
+            }));
             const myOwn = allTours.filter(t => t.addedBy === email);
             setMyTours(myOwn);
         } catch (error) {
@@ -140,8 +143,8 @@ function Dashboard() {
 
     const fetchCities = async () => {
         try {
-            const snapshot = await getDocs(collection(db, 'city'));
-            const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const res = await api.get('/villes');
+            const data = (res.data || []).map(c => ({ id: c.id, nom: c.nom }));
             setCities(data);
             if (data.length > 0) {
                 setNewService(prev => ({ ...prev, ville: data[0].nom }));
@@ -153,11 +156,20 @@ function Dashboard() {
 
     const fetchMyServices = async (email) => {
         try {
-            // Firestore services
-            const snapshot = await getDocs(collection(db, 'localServices'));
-            const firestoreServices = snapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data(), category: 'localServices' }))
-                .filter(s => s.addedBy === email);
+            let localSrv = [];
+            try {
+                const res = await api.get('/service-locals');
+                localSrv = (res.data || []).filter(s => s.addedBy === email || s.email === email).map(s => ({
+                    id: s.id,
+                    nom: s.nom_service || s.nom,
+                    type: s.type || 'Service Local',
+                    ville: s.ville_name || (typeof s.ville === 'object' ? s.ville?.nom : s.ville) || '',
+                    adresse: s.adresse,
+                    telephone: s.telephone,
+                    status: s.status,
+                    category: 'localServices'
+                }));
+            } catch(e) {}
 
             // Laravel Hotels
             let laravelHotels = [];
@@ -216,9 +228,20 @@ function Dashboard() {
             if (ids.length === 0) return;
 
             try {
-                const snapshot = await getDocs(collection(db, endpoint));
-                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // Handle mixed types (int vs string depending on when originally saved and if migrated)
+                const apiEndpoints = {
+                    hotels: '/hotels',
+                    place: '/lieu-places',
+                    restaurant: '/restaurants',
+                    stadium: '/stades'
+                };
+                const res = await api.get(apiEndpoints[endpoint] || `/${endpoint}`);
+                const data = (res.data || []).map(item => ({
+                    id: item.id,
+                    nom: item.nom,
+                    photo: item.photo_url || item.image_url || item.photo || item.image,
+                    ville: item.ville_name || (typeof item.ville === 'object' ? item.ville?.nom : item.ville) || '',
+                    ...item
+                }));
                 const filtered = data.filter(item => ids.some(id => String(id) === String(item.id)));
                 filtered.forEach(item => {
                     allFavs.push({ ...item, categoryLabel: label });
@@ -248,20 +271,26 @@ function Dashboard() {
         try {
             if (serviceCategory === 'localServices') {
                 const serviceData = {
-                    nom: newService.nom,
+                    nom_service: newService.nom,
                     type: newService.type || 'Service Local',
                     ville: newService.ville || cities[0]?.nom || '',
                     adresse: newService.adresse || '',
                     telephone: newService.telephone || '',
-                    proprietaire: newService.proprietaire || '',
-                    details: newService.details || '',
-                    image: newService.image || '',
-                    addedBy: user.email,
-                    status: 'pending'
+                    image_url: newService.image || '',
+                    status: 'accepted'
                 };
-                const docRef = await addDoc(collection(db, 'localServices'), serviceData);
-                setMyServices([...myServices, { id: docRef.id, ...serviceData, category: 'localServices' }]);
-                alert('Service Local soumis avec succès! En attente de validation.');
+                const res = await api.post('/service-locals', serviceData);
+                setMyServices([...myServices, {
+                    id: res.data.id,
+                    nom: res.data.nom_service || newService.nom,
+                    type: newService.type || 'Service Local',
+                    ville: newService.ville || cities[0]?.nom || '',
+                    adresse: newService.adresse || '',
+                    telephone: newService.telephone || '',
+                    status: 'accepted',
+                    category: 'localServices'
+                }]);
+                alert('Service Local soumis avec succès!');
             } else if (serviceCategory === 'hotel') {
                 const payload = {
                     nom: newService.nom,
@@ -966,15 +995,26 @@ function Dashboard() {
 
     const handleAddTour = async (e) => {
         e.preventDefault();
-        const tourData = {
-            ...newTour,
-            addedBy: user.email,
-            status: 'accepted'
-        };
-
         try {
-            const docRef = await addDoc(collection(db, 'tours'), tourData);
-            setMyTours([...myTours, { id: docRef.id, ...tourData }]);
+            const res = await api.post('/plan-tours', {
+                titre: newTour.titre,
+                prix: Number(newTour.prix) || 0,
+                duree: newTour.duree || '1 jour',
+                ville: newTour.destination || cities[0]?.nom || '',
+                image_url: newTour.image,
+                status: 'accepted'
+            });
+            const created = {
+                id: res.data.id,
+                titre: res.data.titre || newTour.titre,
+                destination: res.data.ville_name || (typeof res.data.ville === 'object' ? res.data.ville?.nom : res.data.ville) || newTour.destination,
+                duree: res.data.duree || newTour.duree,
+                prix: res.data.prix || newTour.prix,
+                image: res.data.image_url || newTour.image,
+                status: 'accepted',
+                addedBy: user.email
+            };
+            setMyTours([...myTours, created]);
             setNewTour({ titre: '', destination: '', duree: '', prix: '', details: '', image: '' });
             setIsCustomCityTour(false);
             alert('Plan de voyage créé avec succès !');

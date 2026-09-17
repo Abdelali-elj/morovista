@@ -25,8 +25,6 @@ import {
 import { FaAmbulance, FaTrain, FaInfoCircle, FaExclamationTriangle, FaBalanceScale, FaPhoneVolume } from "react-icons/fa";
 import { MdOutlineLocalPolice, MdOutlineFireTruck } from "react-icons/md";
 import { useAuth } from "../context/AuthContext";
-import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import api from '../api';
 
 
@@ -148,29 +146,24 @@ function Navbar() {
         };
     }, []);
 
-    // Pre-load search data from Firebase and API once
+    // Pre-load search data from API once
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Fetch Laravel API Data
-                const [hotelsRes, restauRes] = await Promise.all([
+                const [hotelsRes, restauRes, servicesRes, phonesRes, toursRes] = await Promise.all([
                     api.get('/hotels'),
-                    api.get('/restaurants')
-                ]);
-
-                // Fetch Firebase Data
-                const [servicesSnap, phonesSnap, toursSnap] = await Promise.all([
-                    getDocs(collection(db, 'localServices')),
-                    getDocs(collection(db, 'PhoneN')),
-                    getDocs(collection(db, 'tours'))
+                    api.get('/restaurants'),
+                    api.get('/service-locals'),
+                    api.get('/urgence-phonens'),
+                    api.get('/plan-tours')
                 ]);
 
                 setLocalData({
-                    hotels: hotelsRes.data.map(item => ({ ...item, photo: item.photo_url, ville: item.ville_name })),
-                    restaurant: restauRes.data.map(item => ({ ...item, photo: item.photo_url, ville: item.ville_name })),
-                    localServices: servicesSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-                    phones: phonesSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-                    tours: toursSnap.docs.map(d => ({ id: d.id, ...d.data() }))
+                    hotels: (hotelsRes.data || []).map(item => ({ ...item, photo: item.photo_url || item.photo, ville: item.ville_name || (typeof item.ville === 'object' ? item.ville?.nom : item.ville) || '' })),
+                    restaurant: (restauRes.data || []).map(item => ({ ...item, photo: item.photo_url || item.photo, ville: item.ville_name || (typeof item.ville === 'object' ? item.ville?.nom : item.ville) || '' })),
+                    localServices: (servicesRes.data || []).map(item => ({ id: item.id, nom: item.nom_service || item.nom, ...item, ville: item.ville_name || (typeof item.ville === 'object' ? item.ville?.nom : item.ville) || '' })),
+                    phones: (phonesRes.data || []).map(item => ({ id: item.id, nom: item.service_nom || item.nom, num: item.numero || item.num })),
+                    tours: (toursRes.data || []).map(item => ({ id: item.id, titre: item.titre, destination: item.ville_name || (typeof item.ville === 'object' ? item.ville?.nom : item.ville) || '', ...item }))
                 });
             } catch (e) {
                 console.error('Search data preload error:', e);
