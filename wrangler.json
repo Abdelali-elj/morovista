@@ -1,0 +1,11 @@
+{
+  "name": "morovista",
+  "main": "Pfe-Vite/src/worker.js",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./Pfe-Vite/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  }
+}
