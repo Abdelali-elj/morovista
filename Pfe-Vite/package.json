@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
+        "build": "vite build && node -e \"fs.copyFileSync('src/worker.js', 'dist/_worker.js')\"",
         "lint": "eslint .",
         "preview": "vite preview",
         "server": "json-server --watch db.json --port 3000"
