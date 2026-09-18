@@ -224,18 +224,18 @@ CREATE TABLE `my_plans` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `status`, `firebase_uid`) VALUES
-(1, 'Admin Root', 'admin@gmail.com', '$2y$10$a603O4.aEktFUCpNXgynouWoo.alUYOXC5DxPA/mbhmAJpvWPi8i6', 'admin', 'accepted', NULL),
-(2, 'User Test', 'user@gmail.com', '$2y$10$NWk.AsJYUJUfUexWae5CXOHjVZ0kHT22wOVkd01arE1s.5cOq/6NW', 'user', 'accepted', NULL),
-(3, 'Guide Maroc', 'guide@gmail.com', '$2y$10$EtVOgq5i2D5Gr576st1VC.eFht9kBLb/NAhXMNlCzBvJ5WosThhMS', 'guide', 'accepted', NULL),
-(4, 'Local Provider', 'local@gmail.com', '$2y$10$TCSFQxr7EvrWIwKZN5dHa.AZqifnFRceXJoH.xfpwG3rxEozLbLJa', 'provider', 'accepted', NULL),
-(5, 'ahmed alaoui', 'a@gmail.com', '$2y$10$/Mn9o9vnquusvmm3.fj/zOEfcdnbNNSnjncK8qDTGUE4qO/VE.J5i', 'visitor', 'accepted', '4sSZlCCW8XWxervMmKhgWptMAng2'),
-(6, 'Visitor', 'visitor1@gmail.com', '$2y$10$/Mn9o9vnquusvmm3.fj/zOEfcdnbNNSnjncK8qDTGUE4qO/VE.J5i', 'visitor', 'accepted', 'GBYSjB311UhOLT8GRTksYDXCDTC3'),
-(7, 'Hamid', 'hamid@gmail.com', '$2y$10$/Mn9o9vnquusvmm3.fj/zOEfcdnbNNSnjncK8qDTGUE4qO/VE.J5i', 'guide', 'accepted', 'NxEDkp03A2X43lhJdhhjxoVDnze2'),
-(8, 'aaaaa', 'a@morovista.com', '$2y$10$/Mn9o9vnquusvmm3.fj/zOEfcdnbNNSnjncK8qDTGUE4qO/VE.J5i', 'provider', 'accepted', 'OT3qeWJXIeZ3p0jk5GOyrG2krhr2'),
-(9, 'elyasse', 'elyasse@gmail.com', '$2y$10$/Mn9o9vnquusvmm3.fj/zOEfcdnbNNSnjncK8qDTGUE4qO/VE.J5i', 'guide', 'accepted', 'QN4Dx5tJyffBOGj0aRSKcxt4xKQ2'),
-(10, 'Service Provider', 'provider@gmail.com', '$2y$10$/Mn9o9vnquusvmm3.fj/zOEfcdnbNNSnjncK8qDTGUE4qO/VE.J5i', 'provider', 'accepted', 'Vo4ZGtu2b0RRTCPxTQREZO9Ko1q1'),
-(11, 'Super Admin', 'boss@morovista.com', '$2y$10$/Mn9o9vnquusvmm3.fj/zOEfcdnbNNSnjncK8qDTGUE4qO/VE.J5i', 'admin', 'accepted', 'hVkWI6RffvPVYjAhm9tCWYRARR52'),
-(12, 'salma', 's@gmail.com', '$2y$10$/Mn9o9vnquusvmm3.fj/zOEfcdnbNNSnjncK8qDTGUE4qO/VE.J5i', 'visitor', 'accepted', 'odD0c52UrcdDlnB1Zxsz30BEDiw1');
+(1, 'Admin Root', 'admin@gmail.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'admin', 'accepted', NULL),
+(2, 'User Test', 'user@gmail.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'user', 'accepted', NULL),
+(3, 'Guide Maroc', 'guide@gmail.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'guide', 'accepted', NULL),
+(4, 'Local Provider', 'local@gmail.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'provider', 'accepted', NULL),
+(5, 'ahmed alaoui', 'a@gmail.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'visitor', 'accepted', '4sSZlCCW8XWxervMmKhgWptMAng2'),
+(6, 'Visitor', 'visitor1@gmail.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'visitor', 'accepted', 'GBYSjB311UhOLT8GRTksYDXCDTC3'),
+(7, 'Hamid', 'hamid@gmail.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'guide', 'accepted', 'NxEDkp03A2X43lhJdhhjxoVDnze2'),
+(8, 'aaaaa', 'a@morovista.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'provider', 'accepted', 'OT3qeWJXIeZ3p0jk5GOyrG2krhr2'),
+(9, 'elyasse', 'elyasse@gmail.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'guide', 'accepted', 'QN4Dx5tJyffBOGj0aRSKcxt4xKQ2'),
+(10, 'Service Provider', 'provider@gmail.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'provider', 'accepted', 'Vo4ZGtu2b0RRTCPxTQREZO9Ko1q1'),
+(11, 'Super Admin', 'boss@morovista.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'admin', 'accepted', 'hVkWI6RffvPVYjAhm9tCWYRARR52'),
+(12, 'salma', 's@gmail.com', '$2y$10$R3fnrMBvnpt9sRJ5fCZ5KeR2.n8xNlAhxWsI1V7J3uVr3X86K9z12', 'visitor', 'accepted', 'odD0c52UrcdDlnB1Zxsz30BEDiw1');
 
 INSERT INTO `villes` (`id`, `nom`, `image_url`) VALUES
 (1, 'Marrakech', NULL),
