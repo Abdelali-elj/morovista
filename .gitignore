@@ -1,5 +1,9 @@
-﻿node_modules/
+node_modules/
 .DS_Store
 dist/
 build/
 .env
+Pfe-Laravel/
+pfe.sql
+generate_sql.php
+
