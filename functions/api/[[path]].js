@@ -7,8 +7,13 @@ const slowAES = {
     Rcon: [141,1,2,4,8,16,32,64,128,27,54,108,216,171,77,154,47,94,188,99,198,151,53,106,212,179,125,250,239,197,145,57,114,228,211,189,97,194,159,37,74,148,51,102,204,131,29,58,116,232,203],
     galois_multiplication: function(i, t) {
       for(var r=0,o=0;o<8;o++){
-        1==(1&t)&&(r^=i),256<r&&(r^=256);
-        var n=128&i;256<(i<<=1)&&(i^=256),128==n&&(i^=27),256<i&&(i^=256),256<(t>>=1)&&(t^=256)
+        if (1==(1&t)) r^=i;
+        if (256<r) r^=256;
+        var n=128&i;
+        if (256<(i<<=1)) i^=256;
+        if (128==n) i^=27;
+        if (256<i) i^=256;
+        if (256<(t>>=1)) t^=256;
       }
       return r;
     },
@@ -30,7 +35,8 @@ const slowAES = {
     subBytes: function(i, t) { for(var r=0;r<16;r++)i[r]=(t?this.rsbox:this.sbox)[i[r]]; return i; },
     shiftRows: function(i, t) { for(var r=0;r<4;r++)i=this.shiftRow(i,4*r,r,t); return i; },
     shiftRow: function(i, t, r, o) {
-      for(var n=0;n<r;n++)if(o){for(var s=i[t+3],e=3;0<e;e--)i[t+e]=i[t+e-1];i[t]=s;}else{for(s=i[t],e=0;e<3;e++)i[t+e]=i[t+e+1];i[t+3]=s;}
+      var s, e;
+      for(var n=0;n<r;n++)if(o){for(s=i[t+3],e=3;0<e;e--)i[t+e]=i[t+e-1];i[t]=s;}else{for(s=i[t],e=0;e<3;e++)i[t+e]=i[t+e+1];i[t+3]=s;}
       return i;
     },
     mixColumns: function(i, t) {
@@ -42,7 +48,8 @@ const slowAES = {
       return i;
     },
     mixColumn: function(i, t) {
-      for(var r=[],r=t?[14,9,13,11]:[2,1,1,3],o=[],n=0;n<4;n++)o[n]=i[n];
+      var r=t?[14,9,13,11]:[2,1,1,3],o=[],n;
+      for(n=0;n<4;n++)o[n]=i[n];
       return i[0]=this.galois_multiplication(o[0],r[0])^this.galois_multiplication(o[3],r[1])^this.galois_multiplication(o[2],r[2])^this.galois_multiplication(o[1],r[3]),
              i[1]=this.galois_multiplication(o[1],r[0])^this.galois_multiplication(o[0],r[1])^this.galois_multiplication(o[3],r[2])^this.galois_multiplication(o[2],r[3]),
              i[2]=this.galois_multiplication(o[2],r[0])^this.galois_multiplication(o[1],r[1])^this.galois_multiplication(o[0],r[2])^this.galois_multiplication(o[3],r[3]),
@@ -61,7 +68,7 @@ const slowAES = {
     },
     decrypt: function(i, t, r) {
       for(var o=[],n=[],s=this.numberOfRounds(r),e=0;e<4;e++)for(var a=0;a<4;a++)n[e+4*a]=i[4*e+a];
-      for(var r=this.expandKey(t,r),n=this.invMain(n,r,s),h=0;h<4;h++)for(var u=0;u<4;u++)o[4*h+u]=n[h+4*u];
+      for(var rKey=this.expandKey(t,r),n=this.invMain(n,rKey,s),h=0;h<4;h++)for(var u=0;u<4;u++)o[4*h+u]=n[h+4*u];
       return o;
     }
   },
@@ -70,15 +77,16 @@ const slowAES = {
   decrypt: function(t, r, o, n) {
     var s=o.length;
     var e,a=[],h=[],u=[],f=[],l=!0;
+    var idx, v;
     if(null!==t){
       for(var c=0;c<Math.ceil(t.length/16);c++){
         var d=16*c,p=16*c+16;
         if(16*c+16>t.length&&(p=t.length),e=this.getBlock(t,d,p,r),r==this.modeOfOperation.CBC){
-          for(h=this.aes.decrypt(e,o,s),i=0;i<16;i++)u[i]=(l?n:a)[i]^h[i];
+          for(h=this.aes.decrypt(e,o,s),idx=0;idx<16;idx++)u[idx]=(l?n:a)[idx]^h[idx];
           l=!1;for(v=0;v<p-d;v++)f.push(u[v]);a=e;
         }
       }
-      r==this.modeOfOperation.CBC&&this.unpadBytesOut(f);
+      if (r==this.modeOfOperation.CBC) this.unpadBytesOut(f);
     }
     return f;
   },
@@ -89,7 +97,7 @@ const slowAES = {
         if(-1==r&&(r=i[o]),i[o]!=r){t=0;break;}
         if(++t==r)break;
       }
-      0<t&&i.splice(i.length-t,t);
+      if (0<t) i.splice(i.length-t,t);
     }
   }
 };
